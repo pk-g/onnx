@@ -9170,6 +9170,83 @@ This version of the operator has been available since version 9 of the default O
 <dd>Constrain input and output types to float/int tensors.</dd>
 </dl>
 
+### <a name="Reverse-9"></a>**Reverse-9**</a>
+
+  Reverse a tensor of arbitrary shape along the given 'axes' in its dimensions.
+  
+  Example 1:
+    input = [
+      [0.0, 1.0, 2.0],
+      [3.0, 4.0, 5.0],
+    ]
+  
+    output = [
+      [5.0, 4.0, 3.0],
+      [2.0, 1.0, 0.0],
+    ]
+  
+  Example 2:
+    input = [
+      [0.0, 1.0, 2.0],
+      [3.0, 4.0, 5.0],
+    ]
+  
+    axes = [0]
+  
+    output = [
+      [3.0, 4.0, 5.0],
+      [0.0, 1.0, 2.0],
+    ]
+    
+  Example 3:
+    input = [
+      [[0.0, 1.0, 2.0],
+       [3.0, 4.0, 5.0]],
+      [[6.0, 7.0, 8.0],
+       [9.0, 10.0, 11.0]],
+    ]
+  
+    axes = [1,-1]
+  
+    output = [
+      [[5.0, 4.0, 3.0],
+       [2.0, 1.0, 0.0]],
+      [[11.0, 10.0, 9.0],
+       [8.0, 7.0, 6.0]],
+    ]
+
+#### Version
+
+This version of the operator has been available since version 9 of the default ONNX operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>axes</tt> : list of ints</dt>
+<dd>A list of integers indicating the axes to reverse. Negative values mean counting dimensions from the back.By default, reverse over all axes of input dimensions</dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>inpu6</tt> : T</dt>
+<dd>Tensor of rank r >= 1.</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>output</tt> : T</dt>
+<dd>Tensor of rank r >= 1 (same rank as input).</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(uint8), tensor(uint16), tensor(uint32), tensor(uint64), tensor(int8), tensor(int16), tensor(int32), tensor(int64), tensor(float16), tensor(float), tensor(double), tensor(string), tensor(bool), tensor(complex64), tensor(complex128)</dt>
+<dd>Input and output types can be of any tensor type.</dd>
+</dl>
+
 ### <a name="Scan-9"></a>**Scan-9**</a>
 
   Scan can be used to iterate over one or more scan_input tensors,
