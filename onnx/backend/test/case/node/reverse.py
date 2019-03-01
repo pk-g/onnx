@@ -14,8 +14,8 @@ class Reverse(Base):
 
     @staticmethod
     def export_default():  # type: () -> None
-        input = np.arange(6.0).reshape(2,3)
-        
+        input = np.arange(6.0).reshape(2, 3)
+
         node = onnx.helper.make_node(
             'Reverse',
             inputs=['input'],
@@ -29,7 +29,7 @@ class Reverse(Base):
 
     @staticmethod
     def export_with_axes():  # type: () -> None
-        input = np.arange(6.0).reshape(2,3)
+        input = np.arange(6.0).reshape(2, 3)
 
         node = onnx.helper.make_node(
             'Reverse',
@@ -38,14 +38,14 @@ class Reverse(Base):
             axes=[0]
         )
 
-        output = np.flip(input,[0])
-    
+        output = np.flip(input)
+
         expect(node, inputs=[input], outputs=[output],
                name='test_reverse_with_axes')
 
     @staticmethod
     def export_with_negative_axes():  # type: () -> None
-        input = np.arange(12.0).reshape(2,2,3)
+        input = np.arange(12.0).reshape(2, 2, 3)
 
         node = onnx.helper.make_node(
             'Reverse',
@@ -54,7 +54,7 @@ class Reverse(Base):
             axes=[1, -1]
         )
 
-        output = np.flip(input,[1, -1])
-    
+        output = np.flip(input, (1, -1))
+
         expect(node, inputs=[input], outputs=[output],
                name='test_reverse_with_negative_axes')

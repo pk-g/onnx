@@ -622,7 +622,7 @@ ONNX_OPERATOR_SET_SCHEMA(
           }
         }));
 
-static const char* Reverse_ver9_doc = R"DOC(Reverse a tensor of arbitrary shape along the given 'axes' in its dimensions.
+static const char* Reverse_ver10_doc = R"DOC(Reverse a tensor of arbitrary shape along the given 'axes' in its dimensions.
 
 Example 1:
   input = [
@@ -668,9 +668,9 @@ Example 3:
 
 ONNX_OPERATOR_SET_SCHEMA(
     Reverse,
-    9,
+    10,
     OpSchema()
-        .SetDoc(Reverse_ver9_doc)
+        .SetDoc(Reverse_ver10_doc)
         .Attr(
             "axes",
             "A list of integers indicating the axes to reverse. "
@@ -678,7 +678,7 @@ ONNX_OPERATOR_SET_SCHEMA(
             "By default, reverse over all axes of input dimensions",
             AttributeProto::INTS,
             OPTIONAL)
-        .Input(0, "inpu6", "Tensor of rank r >= 1.", "T")
+        .Input(0, "input", "Tensor of rank r >= 1.", "T")
         .Output(0, "output", "Tensor of rank r >= 1 (same rank as input).", "T")
         .TypeConstraint(
             "T",
