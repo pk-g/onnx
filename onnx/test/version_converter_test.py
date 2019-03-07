@@ -436,6 +436,33 @@ class TestVersionConverter(unittest.TestCase):
         assert converted_model.graph.node[0].op_type == "MaxPool"
         assert converted_model.opset_import[0].version == 1
 
+    # Test Constant Adapter: 9 -> 8
+    def test_constant_9_8(self):  # type: () -> None
+        op_type = "Constant"
+        from_opset = 9
+        to_opset = 8
+        data_type = TensorProto.UINT64
+
+        output_shape = [2, 3, 4]
+        output_value = np.arange(24)
+
+        nodes = [helper.make_node(
+            op_type,
+            inputs=[],
+            outputs=["Y"],
+            value=helper.make_tensor("", data_type, output_shape, output_value))]
+        graph = helper.make_graph(
+            nodes,
+            "test_constant",
+            [],
+            [onnx.helper.make_tensor_value_info("Y", data_type, output_shape)])
+        converted_model = self._converted(graph, helper.make_operatorsetid("", from_opset), to_opset)
+    
+        assert converted_model.graph.node[0].op_type == op_type
+        assert converted_model.graph.output[0].type.tensor_type.elem_type == data_type
+        assert converted_model.opset_import[0].version == to_opset
+
+    
 
 if __name__ == '__main__':
     unittest.main()
