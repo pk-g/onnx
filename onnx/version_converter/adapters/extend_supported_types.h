@@ -41,21 +41,16 @@ struct ExtendSupportedTypes final : public Adapter {
 
         ONNX_ASSERTM(unsupported_types.find(input_type) == unsupported_types.end(), "Unsupported Input Type");
         ONNX_ASSERTM(unsupported_types.find(output_type) == unsupported_types.end(), "Unsupported Output Type");
-        
-        
-        bool useFloatCast = (node->kind() == kMatMul || node->kind() == kGemm || node->kind() == kPRelu || node->kind() == kGreater || node->kind() == kLess);
-        std::cout << "FLOAT_CAST = " << useFloatCast << " FOR NODE KIND = " << node->kind().toString() << std::endl;
-        bool castInput = (node->kind() != kConstant);
-        std::cout << "CAST_INPUT = " << castInput << " FOR NODE KIND = " << node->kind().toString() << std::endl;
-        bool castOutput = (node->kind() != kGreater && node->kind() != kLess);
-        std::cout << "CAST_OUTPUT = " << castOutput << " FOR NODE KIND = " << node->kind().toString() << std::endl;
 
+        bool castInput = (node->kind() != kConstant);
+        bool castOutput = (node->kind() != kGreater && node->kind() != kLess);
+        
         if(castInput)
         {  
             for (size_t i = 0; i < inputs.size(); i++)
             {
                 Node* pre_cast = create_cast_op(
-                    graph, inputs[i], useFloatCast ? TensorProto_DataType::TensorProto_DataType_FLOAT : TensorProto_DataType::TensorProto_DataType_DOUBLE, inputs[i]->sizes(), "pre_cast_" + std::to_string(i));
+                    graph, inputs[i], TensorProto_DataType::TensorProto_DataType_FLOAT, inputs[i]->sizes(), "pre_cast_" + std::to_string(i));
                 
                 pre_cast->insertBefore(node);
                 node->replaceInput(i, pre_cast->output());
@@ -64,7 +59,7 @@ struct ExtendSupportedTypes final : public Adapter {
         
         if(castOutput)
         {
-            node->output()->setElemType(useFloatCast ? TensorProto_DataType::TensorProto_DataType_FLOAT : TensorProto_DataType::TensorProto_DataType_DOUBLE);
+            node->output()->setElemType(TensorProto_DataType::TensorProto_DataType_FLOAT);
             node->output()->setUniqueName(std::string(node->kind().toString()) + "_output");
         
             Node* post_cast = create_cast_op(
@@ -74,12 +69,8 @@ struct ExtendSupportedTypes final : public Adapter {
 
             for (size_t i = 0; i < graph->outputs().size(); i++)
             {
-                std::cout << "GRAPH OUTPUT " << i << ": " << graph->outputs()[i]->uniqueName() << std::endl;
                 if (graph->outputs()[i]->uniqueName() == node->output()->uniqueName())
                 {
-                    std::cout << "REPLACING OUTPUT " << i << " WITH " << post_cast->output()->uniqueName() << std::endl; 
-                    //graph->registerOutput(post_cast->output());
-                    //graph->return_node()->removeInput(0);
                     graph->return_node()->replaceInput(i, post_cast->output());
                 }
             }

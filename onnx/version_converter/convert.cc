@@ -83,7 +83,6 @@ ModelProto DefaultVersionConverter::convert_version(
           // Op is specifically defined for this domain and version
           OpSetID curr_id(curr_version);
           OpSetID next_id(curr_version + step);
-          std::cout << "Searching for " << op->kind().toString() << " Adapters from version " << curr_id.toString() << " to " << next_id.toString() << std::endl;
           auto& op_adapter = adapter_lookup(op, curr_id, next_id);
           // If adapter_lookup returns null, no adapter is present.
           // Error thrown by adapter_lookup

@@ -15,17 +15,10 @@ struct Upsample_9_8 final : public Adapter {
 
       const ArrayRef<Value*>& inputs = node->inputs();
       const std::vector<Tensor>& initializers = graph->initializers();
-
-      std::cout << "INPUT NAMES: " << std::endl;
-      for (int i = 0; i < inputs.size(); i++)
-      {
-          std::cout << inputs[i]->uniqueName() << std::endl;
-      }
-
-
+      std::string scale_input_name = node->inputs()[1]->uniqueName();
+    
       if (initializers.size() > 0)
       {
-        std::cout << "INITIALIZERS: " << std::endl;
         for(int i = 0; i < initializers.size(); i++)
         {
             if(initializers[i].name() == inputs[1]->uniqueName())
@@ -38,7 +31,6 @@ struct Upsample_9_8 final : public Adapter {
               }
               node->fs_(kscales, const_cast<std::vector<double>&&>(d_values));
               
-              std::string scale_input_name = node->inputs()[1]->uniqueName();
               node->removeInput(1);
               graph->eraseInitializer(initializers[i].name());            
               for(int j = 0; j < graph->inputs().size(); j++)
@@ -55,18 +47,10 @@ struct Upsample_9_8 final : public Adapter {
       }
       else
       {
-        std::cout << "NODE NAMES: " << std::endl;
-        std::string scale_name = inputs[1]->uniqueName();
         for(Node *op : graph->nodes())
         {
-          std::cout << op->kind().toString() << std::endl;
-          if (op->kind() == kConstant && op->outputs()[0]->uniqueName() == scale_name)
+          if (op->kind() == kConstant && op->outputs()[0]->uniqueName() == scale_input_name)
           {
-            for (Symbol name : op->attributeNames())
-            {
-              std::cout << name.toString() << std::endl;
-            }
-            
             const std::vector<float>& value = op->t(kvalue).floats();
             std::vector<double> d_values;
             for (int j = 0; j < value.size(); j++)
@@ -75,14 +59,11 @@ struct Upsample_9_8 final : public Adapter {
             }            
             node->fs_(kscales, const_cast<std::vector<double>&&>(d_values));
             node->removeInput(1);
-
-            /*
-            graph->registerOutput(node->output());
-            graph->return_node()->removeInput(0);
-            */
+            return;
           }
         }
       }
+      ONNX_ASSERT("Unsuppported conversion due to unavailable input: scale");
   }
 
   void adapt(std::shared_ptr<Graph> graph, Node* node) const override {
